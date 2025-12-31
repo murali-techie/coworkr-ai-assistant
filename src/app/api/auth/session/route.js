@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { v4 as uuidv4 } from 'uuid';
 
 // Try to import Firebase, fallback to in-memory if it fails
 let collections = null;
@@ -14,32 +13,17 @@ try {
 export async function GET() {
   try {
     const cookieStore = await cookies();
-    let sessionId = cookieStore.get('coworkr_session')?.value;
-    let userId = cookieStore.get('coworkr_user_id')?.value;
+    const sessionId = cookieStore.get('coworkr_session')?.value;
+    const userId = cookieStore.get('coworkr_user_id')?.value;
 
-    // Create new session if none exists
+    // If no session cookie, user is not authenticated
     if (!sessionId || !userId) {
-      sessionId = uuidv4();
-      userId = uuidv4().split('-')[0];
-
-      cookieStore.set('coworkr_session', sessionId, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 7 * 24 * 60 * 60,
-        path: '/',
-      });
-
-      cookieStore.set('coworkr_user_id', userId, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 7 * 24 * 60 * 60,
-        path: '/',
+      return NextResponse.json({
+        authenticated: false,
       });
     }
 
-    // Try to get data from Firebase
+    // Try to get user data from Firebase
     let userData = null;
     let agentData = null;
 
@@ -77,18 +61,7 @@ export async function GET() {
   } catch (error) {
     console.error('Session error:', error);
     return NextResponse.json({
-      authenticated: true,
-      user: {
-        id: 'demo-user',
-        email: 'demo@coworkr.ai',
-        name: 'Demo User',
-        hasCompletedOnboarding: true,
-      },
-      agent: {
-        name: 'Coworkr',
-        avatarUrl: '/avatars/avatar-1.svg',
-        voiceGender: 'female',
-      },
+      authenticated: false,
     });
   }
 }
