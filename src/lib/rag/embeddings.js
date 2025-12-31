@@ -1,69 +1,30 @@
 /**
- * Embedding generation for RAG using Vertex AI
+ * Embedding generation placeholder
+ * Note: RAG/embeddings feature not enabled in current build
  */
-
-const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT_ID;
-const LOCATION = process.env.VERTEX_AI_LOCATION || 'us-central1';
 
 /**
- * Generate embedding for text using Vertex AI
+ * Generate embedding for text (placeholder)
  */
 export async function generateEmbedding(text) {
-  const { PredictionServiceClient } = await import('@google-cloud/aiplatform');
-
-  const client = new PredictionServiceClient({
-    apiEndpoint: `${LOCATION}-aiplatform.googleapis.com`,
-  });
-
-  const endpoint = `projects/${PROJECT_ID}/locations/${LOCATION}/publishers/google/models/text-embedding-004`;
-
-  const instance = {
-    content: text,
-  };
-
-  const [response] = await client.predict({
-    endpoint,
-    instances: [{ structValue: { fields: { content: { stringValue: text } } } }],
-  });
-
-  // Extract embedding values
-  const prediction = response.predictions[0];
-  const embedding = prediction.structValue.fields.embeddings.structValue.fields.values.listValue.values.map(
-    v => v.numberValue
-  );
-
-  return embedding;
+  console.warn('Embeddings not configured - RAG features disabled');
+  return [];
 }
 
 /**
- * Generate embeddings for multiple texts (batch)
+ * Generate embeddings for multiple texts (placeholder)
  */
 export async function generateEmbeddings(texts) {
-  const embeddings = [];
-
-  // Process in batches of 5 to avoid rate limits
-  const batchSize = 5;
-
-  for (let i = 0; i < texts.length; i += batchSize) {
-    const batch = texts.slice(i, i + batchSize);
-    const batchEmbeddings = await Promise.all(batch.map(text => generateEmbedding(text)));
-    embeddings.push(...batchEmbeddings);
-
-    // Small delay between batches
-    if (i + batchSize < texts.length) {
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
-  }
-
-  return embeddings;
+  console.warn('Embeddings not configured - RAG features disabled');
+  return texts.map(() => []);
 }
 
 /**
  * Calculate cosine similarity between two vectors
  */
 export function cosineSimilarity(a, b) {
-  if (a.length !== b.length) {
-    throw new Error('Vectors must have same length');
+  if (a.length !== b.length || a.length === 0) {
+    return 0;
   }
 
   let dotProduct = 0;
@@ -83,12 +44,7 @@ export function cosineSimilarity(a, b) {
  * Find most similar embeddings
  */
 export function findSimilar(queryEmbedding, embeddings, topK = 5) {
-  const similarities = embeddings.map((embedding, index) => ({
-    index,
-    score: cosineSimilarity(queryEmbedding, embedding),
-  }));
-
-  return similarities.sort((a, b) => b.score - a.score).slice(0, topK);
+  return [];
 }
 
 export default {
