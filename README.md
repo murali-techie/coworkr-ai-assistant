@@ -194,14 +194,45 @@ Create a `.env.local` file with the following variables:
 - npm 10 or higher
 - A Google Cloud project with Firestore enabled
 - Google AI API key (get from https://aistudio.google.com/apikey)
-- ElevenLabs account with API key
+- ElevenLabs account with API key and Conversational AI Agent
+
+### Setting Up ElevenLabs Agent
+
+1. **Create an ElevenLabs account** at https://elevenlabs.io
+
+2. **Get your API key**:
+   - Go to https://elevenlabs.io/app/settings/api-keys
+   - Create a new API key and save it
+
+3. **Create a Conversational AI Agent**:
+   - Go to https://elevenlabs.io/app/conversational-ai
+   - Click "Create Agent"
+   - Name it (e.g., "Coworkr Assistant")
+   - Select a voice (e.g., "Adam" for male, "Rachel" for female)
+
+4. **Configure the Agent**:
+   - **System Prompt**: Set a friendly assistant personality
+   - **First Message**: "Hello! I'm Coworkr, your AI assistant. How can I help you today?"
+   - **LLM**: Select "gpt-4o-mini" or similar
+
+5. **Set up Webhook** (for local development):
+   - Install ngrok: `npm install -g ngrok`
+   - Run ngrok: `ngrok http 3000`
+   - Copy the HTTPS URL (e.g., `https://abc123.ngrok.io`)
+   - In ElevenLabs Agent settings, add a webhook:
+     - URL: `https://your-ngrok-url/api/agent/webhook/smart`
+     - Method: POST
+
+6. **Get your Agent ID**:
+   - In the agent settings, find the Agent ID (starts with `agent_`)
+   - Add it to your `.env.local` as `ELEVENLABS_AGENT_ID`
 
 ### Install Steps
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/coworkr.git
-cd coworkr
+git clone https://github.com/murali-techie/coworkr-ai-assistant.git
+cd coworkr-ai-assistant
 
 # Install dependencies
 npm install
